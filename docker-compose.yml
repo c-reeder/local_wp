@@ -1,0 +1,22 @@
+web:
+ image: wordpress
+ links:
+  - mysql
+ environment:
+  - WORDPRESS_DB_PASSWORD=password
+  - WORDPRESS_DB_HOST=mysql:3308
+ ports:
+  - "127.0.0.3:8080:80"
+ volumes:
+  - ./vols/app:/var/www/html
+ entrypoint: apache2-foreground
+mysql:
+ image: mariadb:10.3
+ environment:
+  - MYSQL_ROOT_PASSWORD=password
+  - MYSQL_DATABASE=my-wpdb
+ volumes:
+  - ./vols/container-volume:/var/lib/mysql
+  - ./site_backup.sql:/docker-entrypoint-initdb.d/dump.sql
+ ports:
+  - "3308:3306"
