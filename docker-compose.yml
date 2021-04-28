@@ -1,22 +1,33 @@
-web:
- image: wordpress
- links:
-  - mysql
- environment:
-  - WORDPRESS_DB_PASSWORD=password
-  - WORDPRESS_DB_HOST=mysql:3308
- ports:
-  - "127.0.0.3:8080:80"
- volumes:
-  - ./vols/app:/var/www/html
- entrypoint: apache2-foreground
-mysql:
- image: mariadb:10.3
- environment:
-  - MYSQL_ROOT_PASSWORD=password
-  - MYSQL_DATABASE=my-wpdb
- volumes:
-  - ./vols/container-volume:/var/lib/mysql
-  - ./site_backup.sql:/docker-entrypoint-initdb.d/dump.sql
- ports:
-  - "3308:3306"
+version: "3.9"
+
+services:
+  local_db:
+    image: mariadb:10
+    volumes:
+      - ./runspace/db_data:/var/lib/mysql
+      - ./db_dump.sql:/docker-entrypoint-initdb.d/snapshot.sql:ro
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: local_root
+      MYSQL_DATABASE: local_db # Replace
+      MYSQL_USER: local_user # Replace
+      MYSQL_PASSWORD: local_pass # Replace
+    networks:
+      - wp-network
+
+  wordpress:
+    depends_on:
+      - local_db
+    image: wordpress
+    ports:
+      - "80:80"
+    restart: always
+    volumes:
+      - ./files:/var/www/html
+      - ./htaccess:/var/www/html/.htaccess
+    networks:
+      - wp-network
+
+networks:
+  wp-network:
+    driver: bridge
