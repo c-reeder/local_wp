@@ -5,13 +5,13 @@ services:
     image: mariadb:10
     volumes:
       - ./runspace/db_data:/var/lib/mysql
-      - ./db_dump.sql:/docker-entrypoint-initdb.d/snapshot.sql:ro
+      - ./db_dump.sql:/docker-entrypoint-initdb.d/snapshot.sql:ro # Change local filename to match dump
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: local_root
-      MYSQL_DATABASE: local_db # Replace
-      MYSQL_USER: local_user # Replace
-      MYSQL_PASSWORD: local_pass # Replace
+      MYSQL_DATABASE: local_db 
+      MYSQL_USER: local_user
+      MYSQL_PASSWORD: local_pass
     networks:
       - wp-network
 
