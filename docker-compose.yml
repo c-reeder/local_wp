@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  local_db:
+  wp_db:
     image: mariadb:10
     volumes:
       - ./runspace/db_data:/var/lib/mysql
@@ -13,12 +13,13 @@ services:
       MYSQL_USER: local_user
       MYSQL_PASSWORD: local_pass
     networks:
-      - wp-network
+      - wp-network #change to match line 33
 
   wordpress:
     depends_on:
       - local_db
     image: wordpress
+      #user: "X:X"  #an optional parameter which let's you put your own local user and group id to fix permissions issues
     ports:
       - "80:80"
     restart: always
@@ -26,8 +27,8 @@ services:
       - ./files:/var/www/html
       - ./htaccess:/var/www/html/.htaccess
     networks:
-      - wp-network
+      - wp-network #change to match line 33
 
 networks:
-  wp-network:
+  wp-network: #change this to something unique on your local machine
     driver: bridge
